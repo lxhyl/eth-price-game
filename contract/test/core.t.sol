@@ -10,7 +10,7 @@ contract CoreTest is Test {
     Core core;
 
     function setUp() public {
-        core = new Core();
+        core = new Core(0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e);
     }
 
     function testGeEthtLatestPrice() public {
