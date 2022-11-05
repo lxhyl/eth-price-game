@@ -1,9 +1,12 @@
 import { useWeb3React } from '@web3-react/core'
 import { useCallback, useEffect, useState } from 'react'
-import { metaMask } from '../connectors/metaMask'
+import { hooks as metaMaskHooks, metaMask } from '../connectors/metaMask'
+const { useIsActive } = metaMaskHooks
 export function Connector() {
   const { account } = useWeb3React()
+  const isActive = useIsActive()
   const [isConnect, setIsConnect] = useState<boolean>(false)
+
   const connect = useCallback(() => {
     if (!metaMask.provider) {
       return
@@ -15,6 +18,19 @@ export function Connector() {
       })
       .catch(() => setIsConnect(false))
   }, [])
+  useEffect(() => {
+    if (isActive && !account) {
+      connect()
+      return
+    }
+    if (!isActive && account) {
+      setIsConnect(false)
+      return
+    }
+    if (isActive && account) {
+      setIsConnect(true)
+    }
+  }, [isActive, account, connect])
   useEffect(() => {
     void metaMask.connectEagerly()
   }, [])

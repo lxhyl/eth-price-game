@@ -12,8 +12,9 @@ contract Core is ERC721, Ownable {
         uint256 startPrice;
         uint256 endPrice;
         uint256 startTime;
-        EnumerableSet.AddressSet upGamer;
-        EnumerableSet.AddressSet downGamer;
+        uint256 ethAmount;
+        EnumerableSet.AddressSet upGamers;
+        EnumerableSet.AddressSet downGamers;
     }
     AggregatorV3Interface ethUsdPriceFeed;
 
@@ -23,10 +24,9 @@ contract Core is ERC721, Ownable {
 
     bool public mustStake;
     uint256 public minStakeEthAmount = 1e15;
-    mapping(uint256 => GameMeta) historyGame;
+    mapping(uint256 => GameMeta) games;
 
-    GameMeta currentGame;
-    event DistributeNftForWinner(uint256 epoch, address to, uint256 tokenId);
+    event MintNftForWinner(uint256 epoch, address to, uint256 tokenId);
     event StartGame(uint256 epoch, uint256 startPrice);
     event Bet(uint256 epoch, address user, int256 upOrDown);
     event EndGame(uint256 epoch);
@@ -37,48 +37,48 @@ contract Core is ERC721, Ownable {
     }
 
     // user functions
-    function bet(int256 upOrDown) external {
-        if (currentGame.startPrice == 0) revert("Game not start");
-        if (block.timestamp > currentGame.startTime + 1 hours)
+    function bet(int256 upOrDown) external payable {
+        uint256 epoch = currentEpoch;
+        if (games[epoch].startPrice == 0) revert("Game not start");
+        if (block.timestamp > games[epoch].startTime + 1 hours)
             revert("Can't join in-progress game");
 
-        if (mustStake && msg.value < minStakeEthAmount)
-            revert("eth not enough");
+        if (mustStake) {
+            if (msg.value < minStakeEthAmount) revert("eth not enough");
+            games[epoch].ethAmount += msg.value;
+        }
 
         if (upOrDown > 0) {
-            if (currentGame.upGamer.length() > 100) revert("too much upGamer");
-            currentGame.upGamer.add(msg.sender);
+            if (games[epoch].upGamers.length() > 100)
+                revert("too much upGamer");
+            games[epoch].upGamers.add(msg.sender);
         } else {
-            if (currentGame.downGamer.length() > 100)
+            if (games[epoch].downGamers.length() > 100)
                 revert("too much downGamer");
-            currentGame.downGamer.add(msg.sender);
+            games[epoch].downGamers.add(msg.sender);
         }
-        emit Bet(currentEpoch, msg.sender, upOrDown);
+        emit Bet(epoch, msg.sender, upOrDown);
     }
 
     function endCurrentGame() external {
-        GameMeta storage game = currentGame;
-        if (block.timestamp < game.startTime + 3 hours)
+        uint256 epoch = currentEpoch;
+        if (block.timestamp < games[epoch].startTime + 3 hours)
             revert("Can't end ongoing game");
         uint256 endPrice = geEthtLatestPrice();
+        uint256 startPrice = games[epoch].startPrice;
+        games[epoch].endPrice = endPrice;
 
-        uint256 startPrice = game.startPrice;
-        game.endPrice = endPrice;
-        uint256 epoch = currentEpoch;
         EnumerableSet.AddressSet storage winners = endPrice >= startPrice
-            ? game.upGamer
-            : game.downGamer;
+            ? games[epoch].upGamers
+            : games[epoch].downGamers;
         for (uint256 i; i < winners.length(); i++) {
             uint256 _tokenId = tokenId;
             address winner = winners.at(i);
             super._mint(winner, tokenId);
-            emit DistributeNftForWinner(epoch, winner, _tokenId);
+            emit MintNftForWinner(epoch, winner, _tokenId);
             tokenId++;
         }
-
-        historyGame[epoch] = game;
         currentEpoch = epoch + 1;
-
         emit EndGame(epoch);
     }
 
@@ -96,33 +96,37 @@ contract Core is ERC721, Ownable {
             uint256 startPrice,
             uint256 endPrice,
             uint256 startTime,
-            address[] memory upGamer,
-            address[] memory downGamer
+            uint256 ethAmount,
+            address[] memory upGamers,
+            address[] memory downGamers
         )
     {
-        GameMeta storage game;
-        uint256 _currentEpoch = currentEpoch;
-        if (epoch > _currentEpoch) revert("game not found");
-        if (epoch < _currentEpoch) game = historyGame[epoch];
-        game = currentGame;
+        if (epoch > currentEpoch) revert("game not exist");
+        GameMeta storage game = games[epoch];
+        uint256 upGamersLen = game.upGamers.length();
+        uint256 downGamersLen = game.downGamers.length();
+        address[] memory upGamers = new address[](upGamersLen);
+        address[] memory downGamers = new address[](downGamersLen);
+        for (uint256 i; i < upGamersLen; i++) {
+            upGamers[i] = game.upGamers.at(i);
+        }
+        for (uint256 i; i < downGamersLen; i++) {
+            downGamers[i] = game.downGamers.at(i);
+        }
         startPrice = game.startPrice;
         endPrice = game.endPrice;
         startTime = game.startTime;
-        for (uint256 i; i < game.upGamer.length(); i++) {
-            upGamer.push(game.upGamer.at(i));
-        }
-        for (uint256 i; i < game.downGamer.length(); i++) {
-            downGamer.push(game.downGamer.at(i));
-        }
+        ethAmount = game.ethAmount;
     }
 
     // admin functions
     function start() external onlyOwner {
-        if (currentGame.startPrice != 0) revert("Game alredy start");
+        uint256 epoch = currentEpoch;
+        if (games[epoch].startPrice != 0) revert("Game alredy start");
         uint256 price = geEthtLatestPrice();
-        currentGame.startPrice = price;
-        currentGame.startTime = block.timestamp;
-        emit StartGame(currentEpoch, price);
+        games[epoch].startPrice = price;
+        games[epoch].startTime = block.timestamp;
+        emit StartGame(epoch, price);
     }
 
     function setMustStake(bool stake) external onlyOwner {

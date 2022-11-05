@@ -14,6 +14,6 @@ contract CoreTest is Test {
     }
 
     function testGeEthtLatestPrice() public {
-        console.log(uint256(core.geEthtLatestPrice()));
+        console.log(core.geEthtLatestPrice());
     }
 }
