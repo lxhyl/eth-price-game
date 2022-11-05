@@ -1,5 +1,5 @@
 
-import { BetEthPrice } from "../components/betEthPrice"
+import { BetEthPrice } from "../components/BetEthPrice"
 import { Connector } from "../components/Connector"
 import { Home } from "../components/Home"
 export default function Page() {
