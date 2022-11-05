@@ -16,4 +16,19 @@ contract CoreTest is Test {
     function testGeEthtLatestPrice() public {
         console.log(core.geEthtLatestPrice());
     }
+
+    function testFlow() public {
+        core.start();
+        core.bet(1);
+        (
+            uint256 price,
+            ,
+            ,
+            ,
+            address[] memory upGamers,
+            address[] memory downGamers
+        ) = core.getGameByEpoch(1);
+        console.log(price);
+        console.log(upGamers[0]);
+    }
 }

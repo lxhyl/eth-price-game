@@ -62,7 +62,8 @@ contract Core is ERC721, Ownable {
 
     function endCurrentGame() external {
         uint256 epoch = currentEpoch;
-        if (block.timestamp < games[epoch].startTime + 3 hours)
+        if (games[epoch].startPrice == 0) revert("Game not start");
+        if (block.timestamp < (games[epoch].startTime + 3 hours))
             revert("Can't end ongoing game");
         uint256 endPrice = geEthtLatestPrice();
         uint256 startPrice = games[epoch].startPrice;
@@ -90,7 +91,7 @@ contract Core is ERC721, Ownable {
     }
 
     function getGameByEpoch(uint256 epoch)
-        public
+        external
         view
         returns (
             uint256 startPrice,

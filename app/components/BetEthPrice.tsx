@@ -3,7 +3,7 @@ import { useCallback, useEffect } from "react";
 import { useContracts } from "../hooks/useContracts";
 
 export function BetEthPrice() {
-  const gameContract = useContracts("0x238254c190934d8c1eE595E515132C264cD20F53", true);
+  const gameContract = useContracts("0xacD12BC3c86976F758a7cD163ba4B3b36B602047", true);
 
   const startGame = useCallback(() => {
     if (!gameContract) return
@@ -25,6 +25,10 @@ export function BetEthPrice() {
     }
 
   }, [gameContract])
+  const endGame = useCallback(async () => {
+    if (!gameContract) return
+    gameContract.endCurrentGame();
+  }, [gameContract])
   useEffect(() => {
     getGameData()
   }, [getGameData])
@@ -32,5 +36,6 @@ export function BetEthPrice() {
     <button onClick={startGame}>Start Game</button>
     <button onClick={() => bet(1)}>Bet up</button>
     <button onClick={() => bet(-1)}>Bet down</button>
+    <button onClick={endGame}>End Game</button>
   </div>
 }
