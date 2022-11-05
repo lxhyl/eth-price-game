@@ -1,17 +1,17 @@
 import { BigNumber } from "ethers";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useContracts } from "../hooks/useContracts";
 
 export function BetEthPrice() {
   const gameContract = useContracts("0xacD12BC3c86976F758a7cD163ba4B3b36B602047", true);
-
+  const [errMsg, setErrMsg] = useState<string>()
   const startGame = useCallback(() => {
     if (!gameContract) return
-    gameContract.start()
+    gameContract.start().catch((err: any) => setErrMsg(err.reason))
   }, [gameContract])
   const bet = useCallback((n: number) => {
     if (!gameContract) return
-    gameContract.bet(n)
+    gameContract.bet(n).catch((err: any) => setErrMsg(err.reason))
   }, [gameContract])
   const getGameData = useCallback(async () => {
     if (!gameContract) return
@@ -27,15 +27,18 @@ export function BetEthPrice() {
   }, [gameContract])
   const endGame = useCallback(async () => {
     if (!gameContract) return
-    gameContract.endCurrentGame();
+    gameContract.endCurrentGame().catch((err: any) => setErrMsg(err.reason));
   }, [gameContract])
   useEffect(() => {
     getGameData()
   }, [getGameData])
   return <div>
-    <button onClick={startGame}>Start Game</button>
-    <button onClick={() => bet(1)}>Bet up</button>
-    <button onClick={() => bet(-1)}>Bet down</button>
-    <button onClick={endGame}>End Game</button>
+    <div className="flex gap-4">
+      <button className="border border-gray-500 p-1" onClick={startGame}>Start Game</button>
+      <button className="border border-gray-500 p-1" onClick={() => bet(1)}>Bet up</button>
+      <button className="border border-gray-500 p-1" onClick={() => bet(-1)}>Bet down</button>
+      <button className="border border-gray-500 p-1" onClick={endGame}>End Game</button>
+    </div>
+    <div className=" text-xs text-red-500 mt-4 ">Recent error:{errMsg}</div>
   </div>
 }
