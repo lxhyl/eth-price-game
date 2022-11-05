@@ -1,8 +1,8 @@
 
-export default function Home() {
-  return (
-    <div >
-      Bet for eth price
-    </div>
-  )
+import { Connector } from "../components/Connector"
+import { Home } from "../components/Home"
+export default function Page() {
+  return <Home>
+    <Connector />
+  </Home>
 }
