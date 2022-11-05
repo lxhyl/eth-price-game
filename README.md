@@ -11,4 +11,4 @@
 #### contracts
 
 * `forge install`
-* `forge test`
+* `forge test --rpc-url https://eth-goerli.g.alchemy.com/v2/${alchemy key} -vvv`
