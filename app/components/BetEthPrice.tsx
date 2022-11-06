@@ -1,7 +1,7 @@
 import { BigNumber, utils } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import { useContracts } from "../hooks/useContracts";
-
+import { Win } from "./Win"
 interface Game {
   epoch: number,
   startPrice: BigNumber
@@ -61,10 +61,10 @@ export function BetEthPrice() {
   }, [getGameData])
   return <div className="flex flex-col items-center">
     <div className="flex gap-4">
-      <button className="border border-gray-500 p-1" onClick={startGame}>Start Game</button>
-      <button className="border border-gray-500 p-1" onClick={() => bet(1)}>Bet up</button>
-      <button className="border border-gray-500 p-1" onClick={() => bet(-1)}>Bet down</button>
-      <button className="border border-gray-500 p-1" onClick={endGame}>End Game</button>
+      <button className="border border-gray-500 p-1" onClick={startGame}>Start Play</button>
+      <button className="border border-gray-500 p-1" onClick={() => bet(1)}>Bet Up📈</button>
+      <button className="border border-gray-500 p-1" onClick={() => bet(-1)}>Bet Down📉</button>
+      <button className="border border-gray-500 p-1" onClick={endGame}>End Play</button>
     </div>
     <div className="flex items-center  text-xs text-red-500">{errMsg}
       {errMsg && <span className=" text-lg text-black ml-2 cursor-pointer" onClick={() => setErrMsg(undefined)}>X</span>}
@@ -75,21 +75,32 @@ export function BetEthPrice() {
         <div className="w-full flex items-center justify-center text-2xl font-bold">Game-{game.epoch} </div>
         <div className="my-2 flex gap-4">
           <div className="flex items-center">
-            <span className="text-sm">StartEthPrice:</span>
-            <span className=" text-xl font-bold">{utils.formatUnits(game.startPrice, 8)}</span></div>
+            <span className="text-sm">StartPrice:</span>
+            <span className=" text-xl font-bold">${utils.formatUnits(game.startPrice, 8)}</span></div>
           <div className="flex items-center">
-            <span className="text-sm">EndEthPrice:</span>
-            <span className=" text-xl font-bold">{game.endPrice.eq(0) ? "?" : utils.formatUnits(game.endPrice, 8)}</span></div>
+            <span className="text-sm">EndPrice:</span>
+            <span className=" text-xl font-bold">${game.endPrice.eq(0) ? "****" : utils.formatUnits(game.endPrice, 8)}</span></div>
         </div>
-        <div><span className="text-sm">Reward:</span> <span className="text-xl font-bold">{utils.formatEther(game.ethAmount)} eth</span></div>
+        <div><span className="text-sm">Reward:</span> <span className="text-xl font-bold">
+          {`$${utils.formatUnits(game.ethAmount.mul(game.startPrice), 26)}`}
+        </span>
+          <span className="text-gray-500">({utils.formatEther(game.ethAmount)}ETH)</span>
+        </div>
         <div className="flex flex-col gap-5 mt-8">
           <div className="text-xs p-4 bg-red-500 ">
-            <h1 className="text-white text-lg">Up</h1>
+            <div className="flex justify-between">
+              <h1 className="text-white text-lg">Up</h1>
+              {game.endPrice.gt(game.startPrice) ? <Win /> : <div></div>}
+            </div>
             {game.upGamers.map(address => <div key={address} className="text-gray-100">{address}</div>)}
+
           </div>
           <div className="w-full items-center justify-center flex italic">VS</div>
           <div className="text-xs  p-4 bg-green-400  ">
-            <h1 className=" text-black text-lg">Down</h1>
+            <div className="flex justify-between">
+              {game.endPrice.gt(0) && game.startPrice.gt(game.endPrice) ? <Win /> : <div></div>}
+              <h1 className=" text-black text-lg">Down</h1>
+            </div>
             {game.downGamers.map(address => <div key={address} className="text-gray-800">{address}</div>)}
           </div>
         </div>
