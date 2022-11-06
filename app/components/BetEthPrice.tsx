@@ -108,7 +108,7 @@ export function BetEthPrice() {
               {game.endPrice.gt(0) && game.startPrice.gt(game.endPrice) ? <Win /> : <div></div>}
               <h1 className=" text-black text-lg">Down</h1>
             </div>
-            {game.downGamers.map(address => <div key={address} className="text-gray-800">{address}</div>)}
+            {game.downGamers.map(address => <div key={address} className="text-gray-800 text-right w-full">{address}</div>)}
           </div>
         </div>
       </div>)}
