@@ -81,7 +81,7 @@ export function BetEthPrice() {
       {games.map((game) => <div key={game.startTime.getTime()} className="bg-slate-200 p-4 mt-6 rounded-lg">
         <div className="w-full flex items-center justify-center text-2xl font-bold ">Game-{game.epoch}.  {game.startTime.getTime() === 0 && <div>Pending</div>}</div>
 
-        <div className="my-2 flex gap-4">
+        <div className="my-2 flex flex-col sm:flex-row gap-4">
           <div className="flex items-center">
             <span className="text-sm">StartPrice:</span>
             <span className=" text-xl font-bold">${utils.formatUnits(game.startPrice, 8)}</span></div>
