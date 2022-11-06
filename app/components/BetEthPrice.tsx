@@ -1,3 +1,4 @@
+import { useWeb3React } from "@web3-react/core";
 import { BigNumber, utils } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import { useContracts } from "../hooks/useContracts";
@@ -13,10 +14,12 @@ interface Game {
 }
 
 export function BetEthPrice() {
+  const { account } = useWeb3React()
   const gameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283", true)
   const readGameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283")
   const [errMsg, setErrMsg] = useState<string>()
   const [games, setGames] = useState<Game[]>([])
+  const [owner, setOwner] = useState<string>()
   const startGame = useCallback(() => {
     if (!gameContract) return
     gameContract.start().catch((err: any) => setErrMsg(err.reason))
@@ -59,9 +62,13 @@ export function BetEthPrice() {
       clearInterval(timer)
     }
   }, [getGameData])
+  useEffect(() => {
+    if (!readGameContract) return
+    readGameContract.owner().then(setOwner)
+  }, [readGameContract])
   return <div className="flex flex-col items-center">
     <div className="flex gap-4">
-      <button className="border border-gray-500 p-1" onClick={startGame}>Start Play</button>
+      {account?.toLowerCase() === owner?.toLowerCase() && <button className="border border-gray-500 p-1" onClick={startGame}>Start Play</button>}
       <button className="border border-gray-500 p-1" onClick={() => bet(1)}>Bet Up📈</button>
       <button className="border border-gray-500 p-1" onClick={() => bet(-1)}>Bet Down📉</button>
       <button className="border border-gray-500 p-1" onClick={endGame}>End Play</button>
