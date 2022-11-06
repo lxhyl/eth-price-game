@@ -69,8 +69,8 @@ export function BetEthPrice() {
   return <div className="flex flex-col items-center">
     <div className="flex gap-4">
       {account?.toLowerCase() === owner?.toLowerCase() && <button className="border border-gray-500 p-1" onClick={startGame}>Start Play</button>}
-      <button className="border border-gray-500 p-1" onClick={() => bet(1)}>Bet Up📈</button>
-      <button className="border border-gray-500 p-1" onClick={() => bet(-1)}>Bet Down📉</button>
+      <button className="border border-gray-500 p-1" onClick={() => bet(1)}>Up 📈</button>
+      <button className="border border-gray-500 p-1" onClick={() => bet(-1)}>Down 📉</button>
       <button className="border border-gray-500 p-1" onClick={endGame}>End Play</button>
     </div>
     <div className="flex items-center  text-xs text-red-500">{errMsg}
