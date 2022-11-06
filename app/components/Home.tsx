@@ -12,6 +12,7 @@ const connectors: [MetaMask | Network, Web3ReactHooks][] = [[metaMask, metaMaskH
 
 export function Home(props: HomeProps) {
   return <Web3ReactProvider connectors={connectors}>
+    <div className='fixed w-screen h-screen bg-gray-50  dark:bg-gray-900 transition-colors duration-500 ease-in-out'></div>
     <div className="w-screen h-screen   antialiased  relative flex  flex-col items-center font-mono   bg-gray-50  dark:bg-gray-900 text-slate-800 dark:text-slate-400 transition-colors duration-500 ease-in-out">
       {props.children}
     </div>
