@@ -39,7 +39,7 @@ export function BetEthPrice() {
       const res = await readGameContract.getGameByEpoch(BigNumber.from(epoch))
       console.log("res", res)
       const [startPrice, endPrice, startTime, ethAmount, upGamers, downGamers] = res
-      games.push({
+      games.unshift({
         epoch,
         startPrice,
         endPrice,
@@ -76,10 +76,11 @@ export function BetEthPrice() {
     <div className="flex items-center  text-xs text-red-500">{errMsg}
       {errMsg && <span className=" text-lg text-black ml-2 cursor-pointer" onClick={() => setErrMsg(undefined)}>X</span>}
     </div>
-    <div className="mt-10  bg-slate-200 p-4 rounded-lg">
+    <div className="mt-10">
 
-      {games.reverse().map((game) => <div key={game.startTime.getTime()}>
-        <div className="w-full flex items-center justify-center text-2xl font-bold">Game-{game.epoch} </div>
+      {games.map((game) => <div key={game.startTime.getTime()} className="bg-slate-200 p-4 mt-6 rounded-lg">
+        <div className="w-full flex items-center justify-center text-2xl font-bold ">Game-{game.epoch}.  {game.startTime.getTime() === 0 && <div>Pending</div>}</div>
+
         <div className="my-2 flex gap-4">
           <div className="flex items-center">
             <span className="text-sm">StartPrice:</span>
