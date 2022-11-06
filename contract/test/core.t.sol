@@ -19,7 +19,7 @@ contract CoreTest is Test {
 
     function testFlow() public {
         core.start();
-        core.bet(1);
+        core.bet{value: 0.001 * 1e18}(1);
         (
             uint256 price,
             ,
@@ -28,7 +28,9 @@ contract CoreTest is Test {
             address[] memory upGamers,
             address[] memory downGamers
         ) = core.getGameByEpoch(1);
-        console.log(price);
-        console.log(upGamers[0]);
+        console.log("price", price);
+        for (uint256 i; i < upGamers.length; i++) {
+            console.log("test", i, upGamers[i]);
+        }
     }
 }

@@ -34,7 +34,7 @@ export function Connector() {
   useEffect(() => {
     void metaMask.connectEagerly()
   }, [])
-  return <button onClick={connect}>
+  return <button onClick={connect} className="text-xs py-10">
     {isConnect ? account : 'connect'}
   </button>
 }

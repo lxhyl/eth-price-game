@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import "openzeppelin-contracts/token/ERC721/ERC721.sol";
 import "openzeppelin-contracts/access/Ownable.sol";
 import "openzeppelin-contracts/utils/structs/EnumerableSet.sol";
+import "openzeppelin-contracts/interfaces/IERC20.sol";
 import "./interfaces/AggregatorV3Interface.sol";
 
 contract Core is ERC721, Ownable {
@@ -22,7 +23,7 @@ contract Core is ERC721, Ownable {
 
     uint256 public currentEpoch = 1;
 
-    bool public mustStake;
+    bool public mustStake = true;
     uint256 public minStakeEthAmount = 1e15;
     mapping(uint256 => GameMeta) games;
 
@@ -68,6 +69,7 @@ contract Core is ERC721, Ownable {
         uint256 endPrice = geEthtLatestPrice();
         uint256 startPrice = games[epoch].startPrice;
         games[epoch].endPrice = endPrice;
+        uint256 reward = (games[epoch].ethAmount * 70) / 100;
 
         EnumerableSet.AddressSet storage winners = endPrice >= startPrice
             ? games[epoch].upGamers
@@ -76,6 +78,7 @@ contract Core is ERC721, Ownable {
             uint256 _tokenId = tokenId;
             address winner = winners.at(i);
             super._mint(winner, tokenId);
+            sendEth(payable(winner), (reward * 1) / winners.length());
             emit MintNftForWinner(epoch, winner, _tokenId);
             tokenId++;
         }
@@ -90,16 +93,20 @@ contract Core is ERC721, Ownable {
         return uint256(price);
     }
 
+    function sendEth(address payable to, uint256 amount) internal {
+        to.transfer(amount);
+    }
+
     function getGameByEpoch(uint256 epoch)
         external
         view
         returns (
-            uint256 startPrice,
-            uint256 endPrice,
-            uint256 startTime,
-            uint256 ethAmount,
-            address[] memory upGamers,
-            address[] memory downGamers
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address[] memory,
+            address[] memory
         )
     {
         if (epoch > currentEpoch) revert("game not exist");
@@ -114,10 +121,14 @@ contract Core is ERC721, Ownable {
         for (uint256 i; i < downGamersLen; i++) {
             downGamers[i] = game.downGamers.at(i);
         }
-        startPrice = game.startPrice;
-        endPrice = game.endPrice;
-        startTime = game.startTime;
-        ethAmount = game.ethAmount;
+        return (
+            game.startPrice,
+            game.endPrice,
+            game.startTime,
+            game.ethAmount,
+            upGamers,
+            downGamers
+        );
     }
 
     // admin functions
@@ -136,5 +147,16 @@ contract Core is ERC721, Ownable {
 
     function setMinStakeAmount(uint256 amount) external onlyOwner {
         minStakeEthAmount = amount;
+    }
+
+    function withdraw(address token) external onlyOwner {
+        if (token == address(0)) {
+            sendEth(payable(msg.sender), address(this).balance);
+        } else {
+            IERC20(token).transfer(
+                msg.sender,
+                IERC20(token).balanceOf(address(this))
+            );
+        }
     }
 }
