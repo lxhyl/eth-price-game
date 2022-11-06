@@ -74,7 +74,7 @@ export function BetEthPrice() {
       <button className="border border-gray-500 p-1" onClick={endGame}>End Play</button>
     </div>
     <div className="flex items-center  text-xs text-red-500">{errMsg}
-      {errMsg && <span className=" text-lg text-black ml-2 cursor-pointer" onClick={() => setErrMsg(undefined)}>X</span>}
+      {errMsg && <span className=" text-lg ml-2 cursor-pointer" onClick={() => setErrMsg(undefined)}>X</span>}
     </div>
     <div className="mt-10">
 
