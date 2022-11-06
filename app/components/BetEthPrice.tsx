@@ -13,7 +13,8 @@ interface Game {
 }
 
 export function BetEthPrice() {
-  const gameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283", true);
+  const gameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283", true)
+  const readGameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283")
   const [errMsg, setErrMsg] = useState<string>()
   const [games, setGames] = useState<Game[]>([])
   const startGame = useCallback(() => {
@@ -26,13 +27,13 @@ export function BetEthPrice() {
   }, [gameContract])
 
   const getGameData = useCallback(async () => {
-    if (!gameContract) return
-    console.log("gameContract", gameContract)
-    const currentEpoch: BigNumber = await gameContract.currentEpoch();
+    if (!readGameContract) return
+    console.log("gameContract", readGameContract)
+    const currentEpoch: BigNumber = await readGameContract.currentEpoch();
     const games: Game[] = []
     for (let epoch = 1; epoch <= currentEpoch.toNumber(); epoch++) {
 
-      const res = await gameContract.getGameByEpoch(BigNumber.from(epoch))
+      const res = await readGameContract.getGameByEpoch(BigNumber.from(epoch))
       console.log("res", res)
       const [startPrice, endPrice, startTime, ethAmount, upGamers, downGamers] = res
       games.push({
@@ -46,7 +47,7 @@ export function BetEthPrice() {
       })
     }
     setGames(games)
-  }, [gameContract])
+  }, [readGameContract])
   const endGame = useCallback(async () => {
     if (!gameContract) return
     gameContract.endCurrentGame().catch((err: any) => setErrMsg(err.reason));

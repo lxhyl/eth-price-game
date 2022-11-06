@@ -6,6 +6,7 @@ specifiers:
   '@types/react-dom': 18.0.8
   '@web3-react/core': 8.0.35-beta.0
   '@web3-react/metamask': 8.0.28-beta.0
+  '@web3-react/network': 8.0.27-beta.0
   autoprefixer: ^10.4.13
   eslint: 8.26.0
   eslint-config-next: 13.0.2
@@ -23,6 +24,7 @@ dependencies:
   '@types/react-dom': 18.0.8
   '@web3-react/core': 8.0.35-beta.0_react@18.2.0
   '@web3-react/metamask': 8.0.28-beta.0_react@18.2.0
+  '@web3-react/network': 8.0.27-beta.0_react@18.2.0
   eslint: 8.26.0
   eslint-config-next: 13.0.2_wyqvi574yv7oiwfeinomdzmc3m
   ethers: 5.7.2
@@ -683,6 +685,18 @@ packages:
     transitivePeerDependencies:
       - immer
       - react
+    dev: false
+
+  /@web3-react/network/8.0.27-beta.0_react@18.2.0:
+    resolution: {integrity: sha512-kLHilUpLkDejx0C5Rr57puQSEVA+BQmT58xN6D/elphcZpVHAIkbh/MCYm0XrnLmqq0uOjw+jDhEYBBn80ncHQ==}
+    dependencies:
+      '@ethersproject/providers': 5.7.2
+      '@web3-react/types': 8.0.20-beta.0_react@18.2.0
+    transitivePeerDependencies:
+      - bufferutil
+      - immer
+      - react
+      - utf-8-validate
     dev: false
 
   /@web3-react/store/8.0.25-beta.0_react@18.2.0:

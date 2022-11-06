@@ -1,12 +1,14 @@
 import { Web3ReactHooks, Web3ReactProvider } from "@web3-react/core";
 import { MetaMask } from "@web3-react/metamask";
+import { Network } from "@web3-react/network";
 import { ReactNode } from "react";
 import { hooks as metaMaskHooks, metaMask } from '../connectors/metaMask'
+import { hooks as networkHooks, network } from '../connectors/networks'
 interface HomeProps {
   children: ReactNode
 }
 
-const connectors: [MetaMask, Web3ReactHooks][] = [[metaMask, metaMaskHooks]]
+const connectors: [MetaMask | Network, Web3ReactHooks][] = [[metaMask, metaMaskHooks], [network, networkHooks],]
 
 export function Home(props: HomeProps) {
   return <Web3ReactProvider connectors={connectors}>
