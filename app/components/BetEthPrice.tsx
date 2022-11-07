@@ -76,9 +76,9 @@ export function BetEthPrice() {
     <div className="flex items-center  text-xs text-red-500">{errMsg}
       {errMsg && <span className=" text-lg ml-2 cursor-pointer" onClick={() => setErrMsg(undefined)}>X</span>}
     </div>
-    <div className="mt-10">
+    <div className="mt-10 flex flex-col gap-16">
 
-      {games.map((game) => <div key={game.startTime.getTime()} className="bg-slate-200 p-4 mt-6 rounded-lg">
+      {games.map((game) => <div key={game.startTime.getTime()} className="bg-slate-200 p-4 rounded-lg">
         <div className="w-full flex items-center justify-center text-2xl font-bold ">Game-{game.epoch}.  {game.startTime.getTime() === 0 && <div>Pending</div>}</div>
 
         <div className="my-2 flex flex-col sm:flex-row gap-4">
