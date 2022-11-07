@@ -111,23 +111,13 @@ contract Core is ERC721, Ownable {
     {
         if (epoch > currentEpoch) revert("game not exist");
         GameMeta storage game = games[epoch];
-        uint256 upGamersLen = game.upGamers.length();
-        uint256 downGamersLen = game.downGamers.length();
-        address[] memory upGamers = new address[](upGamersLen);
-        address[] memory downGamers = new address[](downGamersLen);
-        for (uint256 i; i < upGamersLen; i++) {
-            upGamers[i] = game.upGamers.at(i);
-        }
-        for (uint256 i; i < downGamersLen; i++) {
-            downGamers[i] = game.downGamers.at(i);
-        }
         return (
             game.startPrice,
             game.endPrice,
             game.startTime,
             game.ethAmount,
-            upGamers,
-            downGamers
+            game.upGamers.values(),
+            game.downGamers.values()
         );
     }
 

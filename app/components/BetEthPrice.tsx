@@ -15,8 +15,8 @@ interface Game {
 
 export function BetEthPrice() {
   const { account } = useWeb3React()
-  const gameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283", true)
-  const readGameContract = useContracts("0x21891c0Fa0915656575f041F5bB4321B21e0c283")
+  const gameContract = useContracts("0x37d8A1A850922260563be4730F3D9927b69573FA", true)
+  const readGameContract = useContracts("0x37d8A1A850922260563be4730F3D9927b69573FA")
   const [errMsg, setErrMsg] = useState<string>()
   const [games, setGames] = useState<Game[]>([])
   const [owner, setOwner] = useState<string>()
